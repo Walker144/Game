@@ -11,7 +11,7 @@ screen = pygame.display.set_mode((1000,768))
 pygame.init()
 TUBESCROLL = -2
 
-FONT = pygame.font.Font('bird.ttf',32)
+FONT = pygame.font.Font('FlappyBird/bird.ttf',32)
 
 def distance(pos1,pos2):
     return ((pos1[0]-pos2[0])**2 + (pos1[1]- pos2[1]) **2)**0.5
@@ -23,7 +23,7 @@ class Bird():
         self.dy = 0
         self.dy2 = 0.4
 
-        self.images = [pygame.transform.scale(pygame.image.load('flying/frame-1.png'), (50, 50)),pygame.transform.scale(pygame.image.load('flying/frame-2.png'), (50, 50)),pygame.transform.scale(pygame.image.load('flying/frame-3.png'), (50, 50)),pygame.transform.scale(pygame.image.load('flying/frame-4.png'), (50, 50))]
+        self.images = [pygame.transform.scale(pygame.image.load('FlappyBird/flying/frame-1.png'), (50, 50)),pygame.transform.scale(pygame.image.load('FlappyBird/flying/frame-2.png'), (50, 50)),pygame.transform.scale(pygame.image.load('FlappyBird/flying/frame-3.png'), (50, 50)),pygame.transform.scale(pygame.image.load('FlappyBird/flying/frame-4.png'), (50, 50))]
 
         self.since = 0
         self.ground = False
@@ -62,7 +62,7 @@ class Bird():
 
 class Tube():
     def __init__(self,y1,x):
-        self.tube = pygame.image.load('tube4.png')
+        self.tube = pygame.image.load('FlappyBird/tube4.png')
         self.tube.set_colorkey((255, 255, 255))
         self.tube.convert_alpha()
         self.x = x
@@ -116,7 +116,7 @@ class Tube():
 
 class Background():
     def __init__(self,x):
-        self.image = pygame.image.load('background.png')
+        self.image = pygame.image.load('FlappyBird/background.png')
         self.x = x
         self.y = 0
     def move(self):
