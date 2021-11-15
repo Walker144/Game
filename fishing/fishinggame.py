@@ -9,15 +9,10 @@ pygame.init()
 
 
 def Collisiondetection(hook,obj):
-    if hook.x + 25 > (obj.x + obj.size[0]/2) and hook.x< ((obj.x + 4* obj.size[0]/5)):
-        print('hello')
+    rect1 = pygame.Rect(hook.x + 15,hook.y+15,10,30)
+    rect2 = pygame.Rect(obj.x,obj.y,obj.size[0],obj.size[1])
 
-        #print((hook.y + hook.hooksize[0]),(obj.y + obj.size[1]))
-
-        if (hook.y + hook.hooksize[0]) < (obj.y + obj.size[1]) and (hook.y + hook.hooksize[1]) > (obj.y):
-            return 1
-    else:
-        return 0
+    return rect1.colliderect(rect2)
 
 
 
@@ -30,19 +25,19 @@ class Junk():
     def __init__(self,y):
         self.y = y
         self.x = 1200
-        self.dx = -3
+        self.dx = - 1 * random.randint(1,4)
         self.image = pygame.image.load('assets/junk/1.png').convert_alpha()
         self.image = pygame.transform.rotate(self.image,random.randint(0,360))
         self.size = self.image.get_size()
         self.hashit = 0
-        print(self.size)
+
         self.letgo = False
 
     def move(self):
-        if self.dx == 0:
+        if self.dx == 0 and self.hashit == 1:
             self.y = h.y + 15
 
-        if self.y < 100:
+        if self.y < 200:
             h.holding = False
             return -1
 
@@ -64,13 +59,25 @@ class Junk():
                 self.dx = -3
                 h.holding = False
 
-            if not self.letgo and not h.holding:
+            if not h.holding and not self.letgo:
                 self.dx = 0
-                h.holding = True
-            elif not h.holding:
-                self.hashit = 0
+
                 h.holding = True
 
+            elif h.holding and self.dx != 0:
+
+                self.hashit = 0
+                h.holding = True
+    def __repr__(self):
+        return f'{self.dx,self.hashit}'
+
+
+class bottle2(Junk):
+    def __init__(self,y):
+        super(bottle2,self).__init__(y)
+        self.image = pygame.image.load('assets/junk/2.png').convert_alpha()
+        self.image = pygame.transform.rotate(self.image, random.randint(0, 360))
+        self.size = self.image.get_size()
 
 
 
@@ -82,18 +89,27 @@ class Hook():
         self.image.set_colorkey((255, 255, 255))
         self.image = self.image.convert_alpha()
         self.image = pygame.transform.flip(self.image,True,False)
-        self.hooksize = [15,30]
+        self.size = [50,50]
         self.holding = False
 
     def move(self):
-        self.y = pygame.mouse.get_pos()[1]
-
+        if pygame.mouse.get_pos()[1] > 100:
+            self.y = pygame.mouse.get_pos()[1]
+        else:
+            self.y = 100
     def draw(self):
         screen.blit(self.image,(self.x,self.y))
 
 
 
-
+class Rope():
+    def __init__(self):
+        self.x = h.x + 27
+        self.top = 50
+        self.bottom = h.y
+    def draw(self):
+        self.bottom = h.y
+        pygame.draw.rect(screen,(0,0,0),(self.x, self.top , 0 , self.bottom - self.top + 5))
 
 
 
@@ -101,39 +117,53 @@ class Hook():
 
 objects = []
 
+
 objects.append(Junk(random.randint(300,600)))
 
 
 h = Hook()
-
+t = Rope()
 
 score = 0
+d = 0
 while True:
     clock.tick(60)
 
     screen.fill((255,255,255))
+
+    pygame.draw.rect(screen,(0,0,0),(0,200,1200,0))
+    t.draw()
     toremove = []
     i = 0
 
     if random.randint(1,100) > 98:
-        objects.append(Junk(random.randint(300,600)))
 
-    for obj in objects:
+        toadd = random.randint(1,2)
+        if toadd == 1:
+            objects.append(Junk(random.randint(300,600)))
+        elif toadd == 2:
+            objects.append(bottle2(random.randint(300, 600)))
+    '''if d % 60 == 0:
+        print(objects)'''
+    d += 1
+    h.move()
+    i = 0
 
+    while i < len(objects):
+        obj = objects[i]
 
         obj.collide()
         iscaught = obj.move()
         if iscaught == -1:
-            toremove.append(i)
+            objects.pop(i)
             score += 1
             print(score)
         elif iscaught == -2:
-            toremove.append(i)
+            objects.pop(i)
+            i=0
 
         obj.draw()
         i += 1
-    for i in toremove:
-        objects.pop(i)
 
     h.move()
     h.draw()
